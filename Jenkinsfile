@@ -25,9 +25,9 @@ pipeline {
                 script {
                     def imageName = ""
 
-                    if (env.BRANCH_NAME == 'your_branch_name') {
+                    if (env.BRANCH_NAME == 'main') {
                         imageName = "nodemain:v1.0"
-                    } else if (env.BRANCH_NAME == 'your_other_branch_name') {
+                    } else if (env.BRANCH_NAME == 'dev') {
                         imageName = "nodedev:v1.0"
                     } else {
                         error "No matching branch for Docker image"
