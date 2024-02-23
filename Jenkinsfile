@@ -1,10 +1,5 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
-    }
-    
     stages {
         stage('Checkout') {
             steps {
@@ -30,16 +25,14 @@ pipeline {
                     def imageName = ""
 
                     if (env.BRANCH_NAME == 'main') {
-                        imageName = "abrkristin/nodemain:v1.0"
+                        imageName = "nodemain:v1.0"
                     } else if (env.BRANCH_NAME == 'dev') {
-                        imageName = "abrkristin/nodedev:v1.0"
+                        imageName = "nodedev:v1.0"
                     } else {
                         error "No matching branch for Docker image"
                     }
                     
                     sh "docker build -t ${imageName} ."
-                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHUB_PASSWORD')]) {
-                        sh "docker login -u abrkristin -p ${DOCKERHUB_PASSWORD}"
                 }
             }
         }
