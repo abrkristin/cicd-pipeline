@@ -38,8 +38,8 @@ pipeline {
                     }
                     
                     sh "docker build -t ${imageName} ."
-                    sh '$DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                    sh "docker push ${imageName}"
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKERHUB_PASSWORD')]) {
+                        sh "docker login -u abrkristin -p ${DOCKERHUB_PASSWORD}"
                 }
             }
         }
