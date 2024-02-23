@@ -19,7 +19,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build and Push Docker Image') {
             steps {
                 script {
                     def imageName = ""
@@ -31,14 +31,16 @@ pipeline {
                     } else {
                         error "No matching branch for Docker image"
                     }
-                    
-                    sh "docker build -t ${imageName} ."
+
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpwd')]) {
+                        sh "docker login -u abrkristin -p ${dockerhubpwd}"
+                        sh "docker build -t ${imageName} ."
+                        sh "docker push ${imageName}"
+                    }
                 }
             }
         }
     }
-
-
     post {
         success {
             echo 'Pipeline completed successfully. Perform any post-build steps here.'
