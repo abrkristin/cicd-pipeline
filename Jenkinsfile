@@ -19,26 +19,28 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build and Push Docker Image') {
             steps {
                 script {
                     def imageName = ""
 
                     if (env.BRANCH_NAME == 'main') {
-                        imageName = "abrkristin/nodemain:v1.0"
+                        imageName = "abrkristin/nodemain:v1.${BUILD_NUMBER}"
                     } else if (env.BRANCH_NAME == 'dev') {
-                        imageName = "abrkristin/nodedev:v1.0"
+                        imageName = "abrkristin/nodedev:v1.${BUILD_NUMBER}"
                     } else {
                         error "No matching branch for Docker image"
                     }
-                    
-                    sh "docker build -t ${imageName} ."
+
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpwd')]) {
+                        sh "docker login -u abrkristin -p ${dockerhubpwd}"
+                        sh "docker build -t ${imageName} ."
+                        sh "docker push ${imageName}"
+                    }
                 }
             }
         }
     }
-
-
     post {
         success {
             echo 'Pipeline completed successfully. Perform any post-build steps here.'
